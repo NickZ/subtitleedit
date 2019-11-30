@@ -5516,13 +5516,12 @@ namespace Nikse.SubtitleEdit.Forms.Ocr
             return unItaliced;
         }
 
-        TesseractRunner _tesseractRunner;
+        private TesseractRunner _tesseractRunner;
 
         private string Tesseract3DoOcrViaExe(Bitmap bmp, string language, string psmMode, int tesseractEngineMode)
         {
             if (_tesseractRunner == null)
             {
-                //_tesseractThreadRunner = new TesseractThreadRunner(OcrDone);
                 _tesseractRunner = new TesseractRunner();
             }
 
