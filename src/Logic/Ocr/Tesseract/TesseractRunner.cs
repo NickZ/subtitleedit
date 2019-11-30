@@ -9,6 +9,9 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
 {
     public class TesseractRunner
     {
+        private static int _tessCounter;
+        private static int _runCounter;
+
         public string LastError { get; private set; }
         public List<string> TesseractErrors { get; }
         private readonly bool _runningOnWindows;
@@ -19,8 +22,15 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
             _runningOnWindows = Configuration.IsRunningOnWindows;
         }
 
+        private void Log(int id, string message)
+        {
+            Configuration.Log(4, $"{id:D4} {message.Replace("\r\n", "\n").Replace('\r', '\n').Replace("\n", "<br/>")}");
+        }
+
         public string Run(string languageCode, string psmMode, string engineMode, string imageFileName, bool run302 = false)
         {
+            int id = System.Threading.Interlocked.Increment(ref _runCounter);
+            Log(id, $"[Tesseract OCR] image-file=|{imageFileName}|");
             LastError = null;
             var tempTextFileName = Path.GetTempPath() + Guid.NewGuid();
             var tesseractDirectory = run302 ? Configuration.Tesseract302Directory : Configuration.TesseractDirectory;
@@ -65,17 +75,33 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
                     process.StartInfo.RedirectStandardError = true;
                 }
 
+                var ms = 0L;
                 try
                 {
+                    var tc = System.Threading.Interlocked.Increment(ref _tessCounter);
+                    Log(id, $"({tc,2}) cwd=|{process.StartInfo.WorkingDirectory}| file=|{process.StartInfo.FileName}| args=|{process.StartInfo.Arguments}|");
+                    ms = System.DateTime.UtcNow.Ticks;
                     process.Start();
                 }
                 catch (Exception exception)
                 {
+                    Log(id, $"EXCEPTION: {exception.Message}");
+                    System.Threading.Interlocked.Decrement(ref _tessCounter);
                     LastError = exception.Message + Environment.NewLine + exception.StackTrace;
                     TesseractErrors.Add(LastError);
                     return "Error!";
                 }
-                process.WaitForExit(8000);
+                process.WaitForExit(30000);
+                ms = (System.DateTime.UtcNow.Ticks - ms) / System.TimeSpan.TicksPerMillisecond;
+                System.Threading.Interlocked.Decrement(ref _tessCounter);
+                if (process.HasExited)
+                {
+                    Log(id, $"hasexited=|{process.HasExited}| exitcode=|{process.ExitCode}| ms={ms}");
+                }
+                else
+                {
+                    Log(id, $"hasexited=|{process.HasExited}| ms={ms}");
+                }
 
                 if (process.HasExited && process.ExitCode != 0)
                 {
@@ -95,21 +121,28 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
             {
                 if (File.Exists(outputFileName))
                 {
+                    Log(id, $"out-file=|{outputFileName}| out-file exists");
                     result = File.ReadAllText(outputFileName, Encoding.UTF8);
-                    result = ParseHocr(result);
+                    result = ParseHocr(id, result);
+                    Log(id, $"out-file=|{outputFileName}| result=|{result}|");
                     File.Delete(outputFileName);
+                }
+                else
+                {
+                    Log(id, $"out-file=|{outputFileName}| out-file does not exist");
                 }
                 File.Delete(imageFileName);
             }
-            catch
+            catch (Exception exception)
             {
+                Log(id, $"EXCEPTION: [parsing out-file] out-file=|{outputFileName}| {exception.Message}");
                 // ignored
             }
 
             return result;
         }
 
-        private static string ParseHocr(string html)
+        private string ParseHocr(int id, string html)
         {
             var sb = new StringBuilder();
             var lineStart = html.IndexOf("<span class='ocr_line'", StringComparison.InvariantCulture);
@@ -119,6 +152,10 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
                 lineStart = Math.Min(lineStart, alternateLineStart);
             }
 
+            if (lineStart < 0)
+            {
+                Log(id, $@"[parsing out-file] ""<span class='ocr_line'"" or ""<span class='ocr_header'"" not found");
+            }
             while (lineStart > 0)
             {
                 var wordStart = html.IndexOf("<span class='ocrx_word'", lineStart, StringComparison.InvariantCulture);
