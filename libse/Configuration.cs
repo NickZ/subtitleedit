@@ -40,6 +40,33 @@ namespace Nikse.SubtitleEdit.Core
             _settings = new Lazy<Settings>(Settings.GetSettings);
         }
 
+        private static readonly object _LogLock = new object();
+        private static Encoding _logFileEncoding;
+        private static string _logFilePath;
+        private static int _logCounter;
+
+        public static void Log(int index, string message)
+        {
+            lock (_LogLock)
+            {
+                if (_logFilePath == null)
+                {
+                    _logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "subtitle-edit.log");
+                    _logFileEncoding = new UTF8Encoding(throwOnInvalidBytes: true, encoderShouldEmitUTF8Identifier: false);
+                }
+                if (0 <= index && index <= message.Length)
+                {
+                    var id = ++_logCounter;
+                    message = message.Insert(index, $" {id:D6}");
+                }
+                using (var log = new StreamWriter(new FileStream(_logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), _logFileEncoding))
+                {
+                    log.WriteLine(message);
+                    log.Flush();
+                }
+            }
+        }
+
         private const int _platformWindows = 1;
         private const int _platformLinux = 2;
         private const int _platformMac = 3;
