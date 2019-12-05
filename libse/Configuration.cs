@@ -129,7 +129,7 @@ namespace Nikse.SubtitleEdit.Core
             if (IsRunningOnLinux || IsRunningOnMac)
             {
                 var datafolder_override = Environment.GetEnvironmentVariable("DATA_FOLDER_OVERRIDE");
-                if (datafolder_override)
+                if (datafolder_override != null)
                 {
                     appDataRoamingPath = Path.Combine(datafolder_override, "");
                 }
@@ -183,7 +183,7 @@ namespace Nikse.SubtitleEdit.Core
             if (IsRunningOnLinux || IsRunningOnMac)
             {
                 var tesseract_overide = Environment.GetEnvironmentVariable("TESSERACT4_OVERRIDE");
-                if (tesseract_overide)
+                if (tesseract_overide != null)
                 {
                     return tesseract_overide;
                 }
@@ -210,7 +210,7 @@ namespace Nikse.SubtitleEdit.Core
             if (IsRunningOnLinux || IsRunningOnMac)
             {
                 var tesseract_overide = Environment.GetEnvironmentVariable("TESSERACT302_OVERRIDE");
-                if (tesseract_overide)
+                if (tesseract_overide != null)
                 {
                     return tesseract_overide;
                 }
