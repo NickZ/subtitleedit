@@ -9,7 +9,12 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
 {
     public class TesseractRunner
     {
-        private static readonly object _ProcessLock = new object();
+        private static readonly object[] _ProcessLock =
+        {
+            new object(), new object(), new object(), new object(),
+            new object(), new object(), new object(), new object(),
+            new object(), new object(), new object()
+        };
         private static int _tessCounter;
         private static int _runCounter;
 
@@ -35,7 +40,7 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
             Log(id, $"[Tesseract OCR] image-file=|{imageFileName}|");
             LastError = null;
             var tempTextFileName = Path.GetTempPath() + Guid.NewGuid();
-            lock (_ProcessLock)
+            lock (_ProcessLock[id % _ProcessLock.Length])
             {
                 using (var process = new Process())
                 {
@@ -98,7 +103,6 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
                         return "Error!";
                     }
                     process.WaitForExit(30000);
-                    process.Refresh();
                     ms = (System.DateTime.UtcNow.Ticks - ms) / System.TimeSpan.TicksPerMillisecond;
                     System.Threading.Interlocked.Decrement(ref _tessCounter);
                     if (process.HasExited)
@@ -118,7 +122,7 @@ namespace Nikse.SubtitleEdit.Logic.Ocr.Tesseract
                     }
                     if (process.ExitCode != 0)
                     {
-                        LastError = "Tesseract returned with code " + process.ExitCode;
+                        LastError = "Tesseract exited with code " + process.ExitCode;
                         TesseractErrors.Add(LastError);
                     }
                 }
