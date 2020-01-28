@@ -491,7 +491,8 @@ namespace Nikse.SubtitleEdit.Logic
         public static Font GetDefaultFont()
         {
             var gs = Configuration.Settings.General;
-            if (string.IsNullOrEmpty(gs.SystemSubtitleFontNameOverride) || gs.SystemSubtitleFontSizeOverride < 5)
+            
+            if (!gs.SystemSubtitleFontOverrideEnabled || string.IsNullOrEmpty(gs.SystemSubtitleFontNameOverride) || gs.SystemSubtitleFontSizeOverride < 5)
             {
                 return DefaultSystemFont;
             }

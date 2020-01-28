@@ -697,9 +697,9 @@ $HorzAlign          =   Center
         public bool AutoConvertToUtf8 { get; set; }
         public bool WriteUtf8Bom { get; set; }
         public bool AutoGuessAnsiEncoding { get; set; }
+        public bool SystemSubtitleFontOverrideEnabled { get; set; }
         public string SystemSubtitleFontNameOverride { get; set; }
         public int SystemSubtitleFontSizeOverride { get; set; }
-
         public string SubtitleFontName { get; set; }
         public int SubtitleFontSize { get; set; }
         public int SubtitleListViewFontSize { get; set; }
@@ -912,7 +912,9 @@ $HorzAlign          =   Center
             DisableVideoAutoLoading = false;
             RightToLeftMode = false;
             LastSaveAsFormat = string.Empty;
+            SystemSubtitleFontOverrideEnabled = false;
             SystemSubtitleFontNameOverride = string.Empty;
+            SystemSubtitleFontSizeOverride = 0;
             CheckForUpdates = true;
             LastCheckForUpdates = DateTime.Now;
             ShowProgress = false;
@@ -2095,6 +2097,13 @@ $HorzAlign          =   Center
             {
                 settings.General.AutoGuessAnsiEncoding = Convert.ToBoolean(subNode.InnerText);
             }
+
+            subNode = node.SelectSingleNode("SystemSubtitleFontOverrideEnabled");
+            if (subNode != null)
+            {
+                settings.General.SystemSubtitleFontOverrideEnabled = Convert.ToBoolean(subNode.InnerText);
+            }
+
 
             subNode = node.SelectSingleNode("SystemSubtitleFontNameOverride");
             if (subNode != null)
@@ -6304,6 +6313,7 @@ $HorzAlign          =   Center
                 textWriter.WriteElementString("AutoConvertToUtf8", settings.General.AutoConvertToUtf8.ToString(CultureInfo.InvariantCulture));
                 textWriter.WriteElementString("WriteUtf8Bom", settings.General.WriteUtf8Bom.ToString(CultureInfo.InvariantCulture));
                 textWriter.WriteElementString("AutoGuessAnsiEncoding", settings.General.AutoGuessAnsiEncoding.ToString(CultureInfo.InvariantCulture));
+                textWriter.WriteElementString("SystemSubtitleFontOverrideEnabled", settings.General.SystemSubtitleFontOverrideEnabled.ToString(CultureInfo.InvariantCulture));
                 textWriter.WriteElementString("SystemSubtitleFontNameOverride", settings.General.SystemSubtitleFontNameOverride);
                 textWriter.WriteElementString("SystemSubtitleFontSizeOverride", settings.General.SystemSubtitleFontSizeOverride.ToString(CultureInfo.InvariantCulture));
                 textWriter.WriteElementString("SubtitleFontName", settings.General.SubtitleFontName);

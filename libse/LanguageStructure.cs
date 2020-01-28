@@ -2265,6 +2265,7 @@
             public string MicrosoftTranslateApiKey { get; set; }
             public string MicrosoftTranslateTokenEndpoint { get; set; }
             public string FontNote { get; set; }
+            public string UIFontNote { get; set; }
             public string RestoreDefaultSettings { get; set; }
             public string RestoreDefaultSettingsMsg { get; set; }
         }

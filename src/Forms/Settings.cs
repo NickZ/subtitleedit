@@ -143,6 +143,12 @@ namespace Nikse.SubtitleEdit.Forms
             UiUtil.InitializeTextEncodingComboBox(comboBoxEncoding);
 
             checkBoxAutoDetectAnsiEncoding.Checked = gs.AutoGuessAnsiEncoding;
+
+            checkBoxEnableUIFontOverride.Checked = gs.SystemSubtitleFontOverrideEnabled;
+            if (gs.SystemSubtitleFontSizeOverride >= 7)
+            {
+                comboBoxUIFontSize.Text = gs.SystemSubtitleFontSizeOverride.ToString(CultureInfo.InvariantCulture);
+            }
             comboBoxSubtitleFontSize.Text = gs.SubtitleFontSize.ToString(CultureInfo.InvariantCulture);
             comboBoxSubtitleListViewFontSize.Text = gs.SubtitleListViewFontSize.ToString(CultureInfo.InvariantCulture);
             checkBoxSubtitleFontBold.Checked = gs.SubtitleFontBold;
@@ -257,20 +263,36 @@ namespace Nikse.SubtitleEdit.Forms
             comboBoxSubtitleFont.BeginUpdate();
             comboBoxFontName.Items.Clear();
             comboBoxSubtitleFont.Items.Clear();
+            comboBoxUIFont.BeginUpdate();
+            comboBoxUIFont.Items.Clear();
+
             foreach (var x in FontFamily.Families.OrderBy(p=>p.Name))
             {
                 comboBoxFontName.Items.Add(x.Name);
                 if (x.IsStyleAvailable(FontStyle.Regular) && x.IsStyleAvailable(FontStyle.Bold))
                 {
+                    if (x.IsStyleAvailable(FontStyle.Bold))
+                    {
+                        comboBoxUIFont.Items.Add(x.Name);
+                    }
                     comboBoxSubtitleFont.Items.Add(x.Name);
+
                     if (x.Name.Equals(gs.SubtitleFontName, StringComparison.OrdinalIgnoreCase))
                     {
                         comboBoxSubtitleFont.SelectedIndex = comboBoxSubtitleFont.Items.Count - 1;
                     }
+                    // If System font override is already set
+                    if (x.Name.Equals(gs.SystemSubtitleFontNameOverride, StringComparison.OrdinalIgnoreCase))
+                    {
+
+                        comboBoxUIFont.SelectedIndex = comboBoxUIFont.Items.Count - 1;
+                    }
+                    // If System font override is not already set, then don't set it
                 }
             }
             comboBoxFontName.EndUpdate();
             comboBoxSubtitleFont.EndUpdate();
+            comboBoxUIFont.EndUpdate();
 
             var wordListSettings = Configuration.Settings.WordLists;
             checkBoxNamesOnline.Checked = wordListSettings.UseOnlineNames;
@@ -379,6 +401,7 @@ namespace Nikse.SubtitleEdit.Forms
             groupBoxFontListViews.Text = language.ListView;
             groupBoxFontTextBox.Text = language.TextBox;
             labelFontNote.Text = language.FontNote;
+            labelUIFontNote.Text = language.UIFontNote;
             labelMinDuration.Text = language.DurationMinimumMilliseconds;
             labelMaxDuration.Text = language.DurationMaximumMilliseconds;
             labelMinGapMs.Text = language.MinimumGapMilliseconds;
@@ -1472,7 +1495,6 @@ namespace Nikse.SubtitleEdit.Forms
             }
 
             gs.DefaultEncoding = UiUtil.GetTextEncodingComboBoxCurrentEncoding(comboBoxEncoding).WebName;
-
             gs.AutoGuessAnsiEncoding = checkBoxAutoDetectAnsiEncoding.Checked;
             gs.SubtitleFontSize = int.Parse(comboBoxSubtitleFontSize.Text);
             gs.SubtitleListViewFontSize = int.Parse(comboBoxSubtitleListViewFontSize.Text);
@@ -1619,6 +1641,19 @@ namespace Nikse.SubtitleEdit.Forms
             if (comboBoxSubtitleFont.SelectedItem != null)
             {
                 gs.SubtitleFontName = comboBoxSubtitleFont.SelectedItem.ToString();
+            }
+
+            // if override isn't checked, then don't save these settings
+            gs.SystemSubtitleFontOverrideEnabled = checkBoxEnableUIFontOverride.Checked;
+            if (checkBoxEnableUIFontOverride.Checked) {
+                if (comboBoxUIFont.SelectedItem != null)
+                {
+                    gs.SystemSubtitleFontNameOverride = comboBoxUIFont.SelectedItem.ToString();
+                }
+                if (!string.IsNullOrEmpty(comboBoxUIFontSize.Text) && comboBoxUIFont.SelectedItem != null)
+                {
+                    gs.SystemSubtitleFontSizeOverride = int.Parse(comboBoxUIFontSize.Text);
+                }
             }
 
             var toolsSettings = Configuration.Settings.Tools;
@@ -3155,6 +3190,14 @@ namespace Nikse.SubtitleEdit.Forms
                 Configuration.Settings.Reset();
                 Init();
             }
+        }
+
+        private void checkBoxEnableUIFontOverride_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBoxUIFont.Enabled = checkBoxEnableUIFontOverride.Checked;
+            comboBoxUIFontSize.Enabled = checkBoxEnableUIFontOverride.Checked;
+            labelUIFont.Enabled = checkBoxEnableUIFontOverride.Checked;
+            labelUIFontSize.Enabled = checkBoxEnableUIFontOverride.Checked;
         }
     }
 }

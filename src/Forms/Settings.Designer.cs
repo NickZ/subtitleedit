@@ -306,7 +306,13 @@
             this.checkBoxToolbarNew = new System.Windows.Forms.CheckBox();
             this.tabPageFont = new System.Windows.Forms.TabPage();
             this.groupBoxFont = new System.Windows.Forms.GroupBox();
-            this.labelFontNote = new System.Windows.Forms.Label();
+            this.groupBoxUIFont = new System.Windows.Forms.GroupBox();
+            this.checkBoxEnableUIFontOverride = new System.Windows.Forms.CheckBox();
+            this.labelUIFontNote = new System.Windows.Forms.Label();
+            this.comboBoxUIFontSize = new System.Windows.Forms.ComboBox();
+            this.labelUIFontSize = new System.Windows.Forms.Label();
+            this.comboBoxUIFont = new System.Windows.Forms.ComboBox();
+            this.labelUIFont = new System.Windows.Forms.Label();
             this.groupBoxFontTextBox = new System.Windows.Forms.GroupBox();
             this.labelSubtitleFontSize = new System.Windows.Forms.Label();
             this.comboBoxSubtitleFontSize = new System.Windows.Forms.ComboBox();
@@ -317,6 +323,7 @@
             this.comboBoxSubtitleListViewFontSize = new System.Windows.Forms.ComboBox();
             this.checkBoxSubtitleListViewFontBold = new System.Windows.Forms.CheckBox();
             this.groupBoxFontGeneral = new System.Windows.Forms.GroupBox();
+            this.labelFontNote = new System.Windows.Forms.Label();
             this.comboBoxSubtitleFont = new System.Windows.Forms.ComboBox();
             this.labelSubtitleFont = new System.Windows.Forms.Label();
             this.panelSubtitleFontColor = new System.Windows.Forms.Panel();
@@ -425,6 +432,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNew)).BeginInit();
             this.tabPageFont.SuspendLayout();
             this.groupBoxFont.SuspendLayout();
+            this.groupBoxUIFont.SuspendLayout();
             this.groupBoxFontTextBox.SuspendLayout();
             this.groupBoxFontListViews.SuspendLayout();
             this.groupBoxFontGeneral.SuspendLayout();
@@ -3782,7 +3790,7 @@
             this.groupBoxFont.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxFont.Controls.Add(this.labelFontNote);
+            this.groupBoxFont.Controls.Add(this.groupBoxUIFont);
             this.groupBoxFont.Controls.Add(this.groupBoxFontTextBox);
             this.groupBoxFont.Controls.Add(this.groupBoxFontListViews);
             this.groupBoxFont.Controls.Add(this.groupBoxFontGeneral);
@@ -3793,14 +3801,96 @@
             this.groupBoxFont.TabStop = false;
             this.groupBoxFont.Text = "Font in UI";
             // 
-            // labelFontNote
+            // groupBoxUIFont
             // 
-            this.labelFontNote.AutoSize = true;
-            this.labelFontNote.Location = new System.Drawing.Point(11, 352);
-            this.labelFontNote.Name = "labelFontNote";
-            this.labelFontNote.Size = new System.Drawing.Size(278, 13);
-            this.labelFontNote.TabIndex = 41;
-            this.labelFontNote.Text = "Note: This is only to set the font in the Subtitle Edit UI...";
+            this.groupBoxUIFont.Controls.Add(this.checkBoxEnableUIFontOverride);
+            this.groupBoxUIFont.Controls.Add(this.labelUIFontNote);
+            this.groupBoxUIFont.Controls.Add(this.comboBoxUIFontSize);
+            this.groupBoxUIFont.Controls.Add(this.labelUIFontSize);
+            this.groupBoxUIFont.Controls.Add(this.comboBoxUIFont);
+            this.groupBoxUIFont.Controls.Add(this.labelUIFont);
+            this.groupBoxUIFont.Location = new System.Drawing.Point(14, 337);
+            this.groupBoxUIFont.Name = "groupBoxUIFont";
+            this.groupBoxUIFont.Size = new System.Drawing.Size(806, 107);
+            this.groupBoxUIFont.TabIndex = 41;
+            this.groupBoxUIFont.TabStop = false;
+            this.groupBoxUIFont.Text = "UI Font Override";
+            // 
+            // checkBoxEnableUIFontOverride
+            // 
+            this.checkBoxEnableUIFontOverride.AutoSize = true;
+            this.checkBoxEnableUIFontOverride.Location = new System.Drawing.Point(16, 17);
+            this.checkBoxEnableUIFontOverride.Name = "checkBoxEnableUIFontOverride";
+            this.checkBoxEnableUIFontOverride.Size = new System.Drawing.Size(142, 17);
+            this.checkBoxEnableUIFontOverride.TabIndex = 34;
+            this.checkBoxEnableUIFontOverride.Text = "Enable UI Font Override";
+            this.checkBoxEnableUIFontOverride.UseVisualStyleBackColor = true;
+            this.checkBoxEnableUIFontOverride.CheckedChanged += new System.EventHandler(this.checkBoxEnableUIFontOverride_CheckedChanged);
+            // 
+            // labelUIFontNote
+            // 
+            this.labelUIFontNote.AutoSize = true;
+            this.labelUIFontNote.Location = new System.Drawing.Point(433, 17);
+            this.labelUIFontNote.MaximumSize = new System.Drawing.Size(360, 0);
+            this.labelUIFontNote.Name = "labelUIFontNote";
+            this.labelUIFontNote.Size = new System.Drawing.Size(136, 13);
+            this.labelUIFontNote.TabIndex = 42;
+            this.labelUIFontNote.Text = "Note: REQUIRES RESTART";
+            // 
+            // comboBoxUIFontSize
+            // 
+            this.comboBoxUIFontSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxUIFontSize.Enabled = false;
+            this.comboBoxUIFontSize.FormattingEnabled = true;
+            this.comboBoxUIFontSize.Items.AddRange(new object[] {
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20"});
+            this.comboBoxUIFontSize.Location = new System.Drawing.Point(210, 63);
+            this.comboBoxUIFontSize.Name = "comboBoxUIFontSize";
+            this.comboBoxUIFontSize.Size = new System.Drawing.Size(73, 21);
+            this.comboBoxUIFontSize.TabIndex = 36;
+            // 
+            // labelUIFontSize
+            // 
+            this.labelUIFontSize.AutoSize = true;
+            this.labelUIFontSize.Enabled = false;
+            this.labelUIFontSize.Location = new System.Drawing.Point(13, 66);
+            this.labelUIFontSize.Name = "labelUIFontSize";
+            this.labelUIFontSize.Size = new System.Drawing.Size(62, 13);
+            this.labelUIFontSize.TabIndex = 36;
+            this.labelUIFontSize.Text = "UI font size";
+            // 
+            // comboBoxUIFont
+            // 
+            this.comboBoxUIFont.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxUIFont.Enabled = false;
+            this.comboBoxUIFont.FormattingEnabled = true;
+            this.comboBoxUIFont.Location = new System.Drawing.Point(210, 36);
+            this.comboBoxUIFont.Name = "comboBoxUIFont";
+            this.comboBoxUIFont.Size = new System.Drawing.Size(188, 21);
+            this.comboBoxUIFont.TabIndex = 31;
+            // 
+            // labelUIFont
+            // 
+            this.labelUIFont.AutoSize = true;
+            this.labelUIFont.Enabled = false;
+            this.labelUIFont.Location = new System.Drawing.Point(13, 39);
+            this.labelUIFont.Name = "labelUIFont";
+            this.labelUIFont.Size = new System.Drawing.Size(43, 13);
+            this.labelUIFont.TabIndex = 30;
+            this.labelUIFont.Text = "UI Font";
             // 
             // groupBoxFontTextBox
             // 
@@ -3820,7 +3910,7 @@
             // labelSubtitleFontSize
             // 
             this.labelSubtitleFontSize.AutoSize = true;
-            this.labelSubtitleFontSize.Location = new System.Drawing.Point(18, 17);
+            this.labelSubtitleFontSize.Location = new System.Drawing.Point(13, 17);
             this.labelSubtitleFontSize.Name = "labelSubtitleFontSize";
             this.labelSubtitleFontSize.Size = new System.Drawing.Size(87, 13);
             this.labelSubtitleFontSize.TabIndex = 30;
@@ -3931,6 +4021,7 @@
             // 
             this.groupBoxFontGeneral.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxFontGeneral.Controls.Add(this.labelFontNote);
             this.groupBoxFontGeneral.Controls.Add(this.comboBoxSubtitleFont);
             this.groupBoxFontGeneral.Controls.Add(this.labelSubtitleFont);
             this.groupBoxFontGeneral.Controls.Add(this.panelSubtitleFontColor);
@@ -3943,6 +4034,16 @@
             this.groupBoxFontGeneral.TabIndex = 38;
             this.groupBoxFontGeneral.TabStop = false;
             this.groupBoxFontGeneral.Text = "General";
+            // 
+            // labelFontNote
+            // 
+            this.labelFontNote.AutoSize = true;
+            this.labelFontNote.Location = new System.Drawing.Point(433, 17);
+            this.labelFontNote.MaximumSize = new System.Drawing.Size(360, 0);
+            this.labelFontNote.Name = "labelFontNote";
+            this.labelFontNote.Size = new System.Drawing.Size(278, 13);
+            this.labelFontNote.TabIndex = 41;
+            this.labelFontNote.Text = "Note: This is only to set the font in the Subtitle Edit UI...";
             // 
             // comboBoxSubtitleFont
             // 
@@ -4556,7 +4657,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxNew)).EndInit();
             this.tabPageFont.ResumeLayout(false);
             this.groupBoxFont.ResumeLayout(false);
-            this.groupBoxFont.PerformLayout();
+            this.groupBoxUIFont.ResumeLayout(false);
+            this.groupBoxUIFont.PerformLayout();
             this.groupBoxFontTextBox.ResumeLayout(false);
             this.groupBoxFontTextBox.PerformLayout();
             this.groupBoxFontListViews.ResumeLayout(false);
@@ -4932,5 +5034,12 @@
         private System.Windows.Forms.Label labelToolsBreakBottomHeavyPercent;
         private System.Windows.Forms.CheckBox checkBoxSyntaxColorGapTooSmall;
         private System.Windows.Forms.Button buttonReset;
+        private System.Windows.Forms.GroupBox groupBoxUIFont;
+        private System.Windows.Forms.Label labelUIFont;
+        private System.Windows.Forms.ComboBox comboBoxUIFontSize;
+        private System.Windows.Forms.Label labelUIFontSize;
+        private System.Windows.Forms.ComboBox comboBoxUIFont;
+        private System.Windows.Forms.Label labelUIFontNote;
+        private System.Windows.Forms.CheckBox checkBoxEnableUIFontOverride;
     }
 }

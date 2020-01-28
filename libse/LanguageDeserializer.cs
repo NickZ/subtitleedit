@@ -5719,6 +5719,9 @@ namespace Nikse.SubtitleEdit.Core
                 case "Settings/FontNote":
                     language.Settings.FontNote = reader.Value;
                     break;
+                case "Settings/UIFontNote":
+                    language.Settings.UIFontNote = reader.Value;
+                    break;
                 case "Settings/RestoreDefaultSettings":
                     language.Settings.RestoreDefaultSettings = reader.Value;
                     break;
