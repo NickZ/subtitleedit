@@ -1,6 +1,6 @@
 name: subtitle-edit
 version: latest
-version-script: cat $SNAPCRAFT_PROJECT_DIR/version.txt
+version-script: cat $SNAPCRAFT_PROJECT_DIR/version.txt | tr -d [:space:]
 grade: stable
 confinement: strict
 base: core18

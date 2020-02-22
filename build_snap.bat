@@ -54,8 +54,9 @@ IF DEFINED MULTIPASS IF EXIST "%MULTIPASS%" (
 CALL :SubDetectSnapcraftPath
 IF DEFINED SNAPCRAFT IF EXIST "%SNAPCRAFT%" (
   ECHO Found Snapcraft!
+  CALL :SubGetVersion
   CALL :SubGetFullVersion
-  ECHO "%VERSION%" >version.txt
+  ECHO %FULLVERSION% >version.txt
 ) ELSE (
   ECHO Snapcraft not found in Path!
   GOTO EndWithError
@@ -111,11 +112,22 @@ PAUSE
 EXIT /B
 
 :SubGetFullVersion
+FOR /F delims^=^"^ tokens^=2 %%A IN ('FINDSTR /R /C:"AssemblyVersion" "src\Properties\AssemblyInfo.cs"') DO (
+  REM 3.4.1.[REVNO]
+  SET "FULLVERSION=%%A"
+)
+Echo %FULLVERSION%
+EXIT /B
+
+:SubGetVersion
 FOR /F delims^=^"^ tokens^=2 %%A IN ('FINDSTR /R /C:"AssemblyVersion" "src\Properties\AssemblyInfo.cs.template"') DO (
   REM 3.4.1.[REVNO]
   SET "VERSION=%%A"
 )
+REM 3.4.1: 0 from the left and -8 chars from the right
+SET "VERSION=%VERSION:~0,-8%"
 EXIT /B
+
 
 
 :SubDetectMultipassPath
