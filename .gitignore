@@ -5,6 +5,7 @@
 *.user
 *.vsp
 *.vspx
+version.txt
 /cov-int/
 /libse/Properties/AssemblyInfo.cs
 /SE*.zip
@@ -37,3 +38,8 @@ SubtitleEdit-*.zip
 /src/SubtitleEdit.userprefs
 SubtitleEditBeta
 /src/SubtitleEdit.sln.DotSettings
+
+# Snapcraft files
+*.snap
+SubtitleEdit.zip
+**/__pycache__/**

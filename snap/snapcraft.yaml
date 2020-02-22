@@ -1,0 +1,169 @@
+name: subtitle-edit
+version: latest
+version-script: cat $SNAPCRAFT_PROJECT_DIR/version.txt
+grade: stable
+confinement: strict
+base: core18
+summary: The subtitle editor :)
+description: "Subtitle Edit is a free (open source) editor for video subtitles - a subtitle editor :)
+
+With SE you can easily adjust a subtitle if it is out of sync with the video in several different ways.
+You can also use SE for making new subtitles from scratch (do use the time-line/waveform/spectrogram) or translating subtitles."
+
+layout:
+  /usr/share/.mono:
+    bind: $SNAP_COMMON/.mono
+
+hooks:
+  configure:
+    plugs:
+      - network
+
+environment:
+  SE_DATA_FOLDER_OVERRIDE: $SNAP_USER_DATA/se_data
+  TMP: $SNAP_USER_DATA/tmp
+  TEMP: $SNAP_USER_DATA/tmp
+  TMPDIR: $SNAP_USER_DATA/tmp
+  TESSDATA_PREFIX: $SE_DATA_FOLDER_OVERRIDE/tessdata
+  SE_TESSERACT4_OVERRIDE: $SE_DATA_FOLDER_OVERRIDE/tessdata
+  MONO_CFG_DIR: $SNAP/etc
+  MONO_CONFIG: $SNAP/etc/mono/config
+  MONO_GAC_PREFIX: $SNAP/usr/lib/mono
+  GTK_PATH: $SNAP/lib/gtk-2.0
+  GTK_DATA_PREFIX: $SNAP
+  XDG_DATA_DIRS: $SNAP/share:$XDG_DATA_DIRS
+
+apps:
+  subtitle-edit:
+    adapter: full
+    command: bin/subtitle-edit
+    command-chain:
+      - bin/desktop-launch
+    common-id: com.nikse.subtitle-edit
+    plugs:
+    - "alsa"
+    - "audio-playback"
+    - "home"
+    - "desktop"
+    - "desktop-legacy"
+    - "gsettings"
+    - "mount-observe"
+    - "network"
+    - "network-bind"
+    - "opengl"
+    - "pulseaudio"
+    - "removable-media"
+    - "x11"
+    - "wayland"
+
+plugs:
+  gtk-2-engines:
+    interface: content
+    target: $SNAP/lib/gtk-2.0
+    default-provider: gtk2-common-themes
+  gtk-2-themes:
+    interface: content
+    target: $SNAP/share/themes
+    default-provider: gtk2-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/share/icons
+    default-provider: gtk-common-themes
+
+parts:
+  mono:
+    plugin: myplugin
+    stage-packages:
+    - mono-runtime
+    - libmono-corlib4.5-cil
+    - libmono-system-windows-forms4.0-cil
+    - libmono-system-runtime4.0-cil
+    - libmono-i18n4.0-all
+    - libgdiplus
+    - libcairo2
+    - ca-certificates-mono
+    - libglib2.0-cil
+
+  desktop-gtk2:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk2"]
+    build-packages:
+      - build-essential
+      - libgtk2.0-dev
+    stage-packages:
+      - libxkbcommon0  # XKB_CONFIG_ROOT
+      - shared-mime-info
+      - libgtk2.0-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk2.0-bin
+      - unity-gtk2-module
+      - locales-all
+      - libgtk2.0-common
+      - libappindicator1
+      - xdg-user-dirs
+      #subedit dependencies
+      - libhunspell-dev
+      - mplayer
+      - libdvdcss2
+      - libmpv1
+      - libmpv-dev
+      - libgpm2
+      - libglu1-mesa
+      - freeglut3
+      - libslang2
+      - libtinfo5
+      - libncursesw5
+      - libbz2-1.0
+      - samba-libs
+      - ffmpeg
+
+  subtitle-edit:
+    source: "./SubtitleEdit.zip"
+    plugin: dump
+    organize:
+      "*" : subedit/
+
+  tesseract:
+    source: https://github.com/tesseract-ocr/tesseract.git
+    source-tag: "4.1"
+    plugin: autotools
+    build-packages:
+      - g++
+      - autoconf
+      - automake
+      - libtool
+      - pkg-config
+      - libpng-dev
+      - libjpeg8-dev
+      - libtiff5-dev
+      - libleptonica-dev
+      - zlib1g-dev
+    stage-packages:
+      - libgomp1
+      - liblept5
+      - libopenjp2-7
+      - libwebp6
+
+  config:
+    source: "./linuxfiles"
+    plugin: dump
+    #always download latest trainingdata
+    override-pull: |
+      snapcraftctl pull
+      rm -f *.traineddata*
+      wget https://github.com/tesseract-ocr/tessdata/raw/master/eng.traineddata
+      wget https://github.com/tesseract-ocr/tessdata/raw/master/osd.traineddata
+    #chmod to fix when building on windows
+    override-build: |
+      chown root:root *
+      chmod 755 "subtitle-edit.wrapper"
+      chmod 644 *.traineddata
+      chmod 644 default_font_override
+      snapcraftctl build
+    organize:
+      "subtitle-edit.wrapper": bin/subtitle-edit
+      "*.traineddata": share/tessdata/
+      "default_font_override": config/default_font_override
