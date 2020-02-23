@@ -42,6 +42,7 @@ ECHO %BUILDTYPE%ing Subtitle Edit snap package...
 ECHO Starting %BUILDTYPE% for Subtitle Edit...
 cmd /c build.bat %~1
 IF %ERRORLEVEL% NEQ 0 GOTO EndWithError
+TITLE %BUILDTYPE%ing Subtitle Edit snap package...
 
 CALL :SubDetectMultipassPath
 IF DEFINED MULTIPASS IF EXIST "%MULTIPASS%" (
@@ -55,8 +56,7 @@ CALL :SubDetectSnapcraftPath
 IF DEFINED SNAPCRAFT IF EXIST "%SNAPCRAFT%" (
   ECHO Found Snapcraft!
   CALL :SubGetVersion
-  CALL :SubGetFullVersion
-  ECHO %FULLVERSION% >version.txt
+  CALL :SubSetFullVersionFile
 ) ELSE (
   ECHO Snapcraft not found in Path!
   GOTO EndWithError
@@ -69,7 +69,7 @@ IF /I "%BUILDTYPE%" == "Clean" (
   GOTO EndSuccessful
 )
 
-DEL /F SubtitleEdit.zip
+DEL SubtitleEdit.zip
 copy SubtitleEdit-%VERSION%.zip SubtitleEdit.zip
 
 Echo "Cleaning previous snapcraft builds..."
@@ -111,12 +111,14 @@ ENDLOCAL
 PAUSE
 EXIT /B
 
-:SubGetFullVersion
+:SubSetFullVersionFile
 FOR /F delims^=^"^ tokens^=2 %%A IN ('FINDSTR /R /C:"AssemblyVersion" "src\Properties\AssemblyInfo.cs"') DO (
   REM 3.4.1.[REVNO]
   SET "FULLVERSION=%%A"
 )
-Echo %FULLVERSION%
+Echo Building snap version number %FULLVERSION%
+ECHO %FULLVERSION% >version.txt
+
 EXIT /B
 
 :SubGetVersion
